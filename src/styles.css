@@ -1,0 +1,27 @@
+:where([data-sonner-toaster]) {
+  position: fixed;
+  width: var(--width);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial,
+    Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  outline: none;
+  z-index: 999999999;
+
+  /* TODO Убрать */
+  border: 1px solid black;
+}
+
+:where([data-sonner-toast]) {
+    --y: translateY(100%);
+    position: absolute;
+    /* opacity: 0; */
+    transform: var(--y);
+    filter: blur(0);
+    transition: transform 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
+    box-sizing: border-box;
+    outline: none;
+    overflow-wrap: anywhere;
+}
