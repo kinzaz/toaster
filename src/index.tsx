@@ -24,10 +24,22 @@ function getDocumentDirection(): ToasterProps["dir"] {
 }
 
 const Toast = (props: ToastProps) => {
-  const { toast } = props;
+  const { toast, position } = props;
+  const [mounted, setMounted] = React.useState(false);
+
+  const [y, x] = position.split("-");
+
+  React.useEffect(() => {
+    // Trigger enter animation without using CSS animation
+    setMounted(true);
+  }, []);
+
   return (
     <li
       data-sonner-toast
+      data-y-position={y}
+      data-x-position={x}
+      data-mounted={mounted}
       // TODO Hardcode temporarily
       data-styled={true}
     >
@@ -117,7 +129,7 @@ const Toaster = (props: ToasterProps) => {
         }
       >
         {toasts.map((toast) => (
-          <Toast key={toast.id} toast={toast} />
+          <Toast key={toast.id} toast={toast} position={position} />
         ))}
       </ol>
     </section>

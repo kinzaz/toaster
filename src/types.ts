@@ -9,6 +9,7 @@ export interface ToastT {
 
 export interface ToastProps {
   toast: ToastT;
+  position?: Position;
 }
 
 export type Position =

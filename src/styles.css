@@ -21,9 +21,7 @@
   --gray10: hsl(0, 0%, 52.3%);
   --gray11: hsl(0, 0%, 43.5%);
   --gray12: hsl(0, 0%, 9%);
-
-  /* TODO Убрать */
-  border: 1px solid black;
+  --border-radius: 8px;
 }
 
 :where([data-sonner-toast]) {
@@ -74,6 +72,19 @@
   bottom: max(var(--offset), env(safe-area-inset-bottom));
 }
 
+:where([data-sonner-toast][data-y-position='bottom']) {
+  bottom: 0;
+}
+
+:where([data-sonner-toast][data-y-position='top']) {
+  top: 0;
+}
+
+:where([data-sonner-toast][data-mounted='true']) {
+  --y: translateY(0);
+  opacity: 1;
+}
+
 [data-sonner-toaster][data-theme='light'] {
   --normal-bg: #fff;
   --normal-border: var(--gray4);
@@ -85,3 +96,4 @@
   --normal-border: hsl(0, 0%, 20%);
   --normal-text: var(--gray1);
 }
+
