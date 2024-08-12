@@ -22,4 +22,6 @@ export type Position =
 export interface ToasterProps {
   position?: Position;
   offset?: string | number;
+  dir?: "rtl" | "ltr" | "auto";
+  theme?: "light" | "dark" | "system";
 }

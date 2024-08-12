@@ -9,14 +9,51 @@ const TOAST_WIDTH = 356;
 // Viewport padding
 const VIEWPORT_OFFSET = "32px";
 
+function getDocumentDirection(): ToasterProps["dir"] {
+  if (typeof window === "undefined") return "ltr";
+  if (typeof document === "undefined") return "ltr";
+
+  const dirAttribute = document.documentElement.getAttribute("dir");
+
+  if (dirAttribute === "auto" || !dirAttribute) {
+    return window.getComputedStyle(document.documentElement)
+      .direction as ToasterProps["dir"];
+  }
+
+  return dirAttribute as ToasterProps["dir"];
+}
+
 const Toast = (props: ToastProps) => {
   const { toast } = props;
-  return <li data-sonner-toast>{toast.title}</li>;
+  return (
+    <li
+      data-sonner-toast
+      // TODO Hardcode temporarily
+      data-styled={true}
+    >
+      {toast.title}
+    </li>
+  );
 };
 
 const Toaster = (props: ToasterProps) => {
-  const { position = "bottom-right", offset } = props;
+  const {
+    position = "bottom-right",
+    offset,
+    dir = getDocumentDirection(),
+    theme = "light",
+  } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
+  const [actualTheme, setActualTheme] = React.useState(
+    theme !== "system"
+      ? theme
+      : typeof window !== "undefined"
+      ? window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : "light"
+  );
 
   const [y, x] = position.split("-");
 
@@ -28,10 +65,48 @@ const Toaster = (props: ToasterProps) => {
     });
   }, []);
 
+  React.useEffect(() => {
+    if (theme !== "system") {
+      setActualTheme(theme);
+      return;
+    }
+
+    if (theme === "system") {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        setActualTheme("dark");
+      } else {
+        setActualTheme("light");
+      }
+    }
+
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = ({ matches }) => {
+      if (matches) {
+        setActualTheme("dark");
+      } else {
+        setActualTheme("light");
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [theme]);
+
   return (
     <section>
       <ol
         data-sonner-toaster
+        // TODO подбить стили под атрибут dir
+        dir={dir === "auto" ? getDocumentDirection() : dir}
+        tabIndex={-1}
+        data-theme={actualTheme}
         data-y-position={y}
         data-x-position={x}
         style={
