@@ -9,6 +9,8 @@ export interface ToastT {
 
 export interface ToastProps {
   toast: ToastT;
+  index: number;
+  toasts: ToastT[];
   position?: Position;
   removeToast: (toast: ToastT) => void;
 }

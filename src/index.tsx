@@ -30,7 +30,7 @@ function getDocumentDirection(): ToasterProps["dir"] {
 }
 
 const Toast = (props: ToastProps) => {
-  const { toast, position, removeToast } = props;
+  const { toast, position, removeToast, index, toasts } = props;
   const [mounted, setMounted] = React.useState(false);
   const [removed, setRemoved] = React.useState(false);
   const [y, x] = position.split("-");
@@ -73,6 +73,11 @@ const Toast = (props: ToastProps) => {
       data-removed={removed}
       // TODO Hardcode temporarily
       data-styled={true}
+      style={
+        {
+          "--z-index": toasts.length - index,
+        } as React.CSSProperties
+      }
     >
       {toast.title}
     </li>
@@ -165,12 +170,14 @@ const Toaster = (props: ToasterProps) => {
           } as React.CSSProperties
         }
       >
-        {toasts.map((toast) => (
+        {toasts.map((toast, index) => (
           <Toast
             key={toast.id}
             toast={toast}
             position={position}
             removeToast={removeToast}
+            index={index}
+            toasts={toasts}
           />
         ))}
       </ol>
