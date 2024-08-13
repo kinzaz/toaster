@@ -9,6 +9,12 @@ const TOAST_WIDTH = 356;
 // Viewport padding
 const VIEWPORT_OFFSET = "32px";
 
+// Equal to exit animation duration
+const TIME_BEFORE_UNMOUNT = 400;
+
+// Default lifetime of a toasts (in ms)
+const TOAST_LIFETIME = 4000;
+
 function getDocumentDirection(): ToasterProps["dir"] {
   if (typeof window === "undefined") return "ltr";
   if (typeof document === "undefined") return "ltr";
@@ -24,10 +30,34 @@ function getDocumentDirection(): ToasterProps["dir"] {
 }
 
 const Toast = (props: ToastProps) => {
-  const { toast, position } = props;
+  const { toast, position, removeToast } = props;
   const [mounted, setMounted] = React.useState(false);
-
+  const [removed, setRemoved] = React.useState(false);
   const [y, x] = position.split("-");
+  const duration = TOAST_LIFETIME;
+
+  const deleteToast = React.useCallback(() => {
+    setRemoved(true);
+
+    setTimeout(() => {
+      removeToast(toast);
+    }, TIME_BEFORE_UNMOUNT);
+  }, [toast]);
+
+  React.useEffect(() => {
+    let timeoutId: number;
+    let remainingTime = duration;
+
+    const startTimer = () => {
+      timeoutId = setTimeout(() => {
+        deleteToast();
+      }, remainingTime);
+    };
+
+    startTimer();
+
+    return () => clearTimeout(timeoutId);
+  }, [toast, deleteToast]);
 
   React.useEffect(() => {
     // Trigger enter animation without using CSS animation
@@ -40,6 +70,7 @@ const Toast = (props: ToastProps) => {
       data-y-position={y}
       data-x-position={x}
       data-mounted={mounted}
+      data-removed={removed}
       // TODO Hardcode temporarily
       data-styled={true}
     >
@@ -68,6 +99,12 @@ const Toaster = (props: ToasterProps) => {
   );
 
   const [y, x] = position.split("-");
+
+  const removeToast = React.useCallback(
+    (toastToRemove: ToastT) =>
+      setToasts((toasts) => toasts.filter(({ id }) => id !== toastToRemove.id)),
+    []
+  );
 
   React.useEffect(() => {
     return ToastState.subscribe((toast) => {
@@ -129,7 +166,12 @@ const Toaster = (props: ToasterProps) => {
         }
       >
         {toasts.map((toast) => (
-          <Toast key={toast.id} toast={toast} position={position} />
+          <Toast
+            key={toast.id}
+            toast={toast}
+            position={position}
+            removeToast={removeToast}
+          />
         ))}
       </ol>
     </section>

@@ -3,7 +3,7 @@ import { ExternalToast, ToastT } from "./types";
 let toastsCounter = 1;
 
 class Observer {
-  subscribers: Array<(toast: unknown) => void>;
+  subscribers: Array<(toast: ExternalToast | unknown) => void>;
   toasts: Array<ToastT | unknown>;
   constructor() {
     this.subscribers = [];

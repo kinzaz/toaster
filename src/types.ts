@@ -10,6 +10,7 @@ export interface ToastT {
 export interface ToastProps {
   toast: ToastT;
   position?: Position;
+  removeToast: (toast: ToastT) => void;
 }
 
 export type Position =

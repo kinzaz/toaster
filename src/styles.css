@@ -27,7 +27,7 @@
 :where([data-sonner-toast]) {
     --y: translateY(100%);
     position: absolute;
-    /* opacity: 0; */
+    opacity: 0;
     transform: var(--y);
     filter: blur(0);
     transition: transform 400ms, opacity 400ms, height 400ms, box-shadow 200ms;
@@ -49,7 +49,6 @@
   align-items: center;
   gap: 6px;
 }
-
 
 :where([data-sonner-toaster][data-x-position='right']) {
   right: max(var(--offset), env(safe-area-inset-right));
@@ -96,4 +95,6 @@
   --normal-border: hsl(0, 0%, 20%);
   --normal-text: var(--gray1);
 }
-
+:where([data-sonner-toast][data-removed='true']) {
+  opacity: 0;
+}
