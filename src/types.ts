@@ -11,8 +11,11 @@ export interface ToastProps {
   toast: ToastT;
   index: number;
   toasts: ToastT[];
-  position?: Position;
   removeToast: (toast: ToastT) => void;
+  heights: HeightT[];
+  setHeights: React.Dispatch<React.SetStateAction<HeightT[]>>;
+  position?: Position;
+  gap?: number;
 }
 
 export type Position =
@@ -28,4 +31,11 @@ export interface ToasterProps {
   offset?: string | number;
   dir?: "rtl" | "ltr" | "auto";
   theme?: "light" | "dark" | "system";
+  gap?: number;
+}
+
+export interface HeightT {
+  height: number;
+  toastId: number | string;
+  position: Position;
 }

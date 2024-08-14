@@ -1,7 +1,7 @@
 import React from "react";
 import { toast, ToastState } from "./state";
 import "./styles.css";
-import { ToasterProps, ToastProps, ToastT } from "./types";
+import { HeightT, ToasterProps, ToastProps, ToastT } from "./types";
 
 // Default toast width
 const TOAST_WIDTH = 356;
@@ -14,6 +14,9 @@ const TIME_BEFORE_UNMOUNT = 400;
 
 // Default lifetime of a toasts (in ms)
 const TOAST_LIFETIME = 4000;
+
+// Default gap between toasts
+const GAP = 14;
 
 function getDocumentDirection(): ToasterProps["dir"] {
   if (typeof window === "undefined") return "ltr";
@@ -30,19 +33,85 @@ function getDocumentDirection(): ToasterProps["dir"] {
 }
 
 const Toast = (props: ToastProps) => {
-  const { toast, position, removeToast, index, toasts } = props;
+  const {
+    toast,
+    position,
+    removeToast,
+    index,
+    toasts,
+    heights,
+    setHeights,
+    gap,
+  } = props;
+  const toastRef = React.useRef<HTMLLIElement>(null);
+  const offset = React.useRef(0);
   const [mounted, setMounted] = React.useState(false);
   const [removed, setRemoved] = React.useState(false);
+  const [initialHeight, setInitialHeight] = React.useState(0);
+  const [offsetBeforeRemove, setOffsetBeforeRemove] = React.useState(0);
   const [y, x] = position.split("-");
+  const isFront = index === 0;
   const duration = TOAST_LIFETIME;
+  const heightIndex = React.useMemo(
+    () => heights.findIndex((height) => height.toastId === toast.id) || 0,
+    [heights, toast.id]
+  );
+
+  const toastsHeightBefore = React.useMemo(() => {
+    return heights.reduce((prev, curr, reducerIndex) => {
+      // Calculate offset up until current  toast
+      if (reducerIndex >= heightIndex) {
+        return prev;
+      }
+
+      return prev + curr.height;
+    }, 0);
+  }, [heights, heightIndex]);
+
+  offset.current = React.useMemo(
+    () => heightIndex * gap + toastsHeightBefore,
+    [heightIndex, toastsHeightBefore]
+  );
 
   const deleteToast = React.useCallback(() => {
     setRemoved(true);
+    setHeights((h) => h.filter((height) => height.toastId !== toast.id));
+    setOffsetBeforeRemove(offset.current);
 
     setTimeout(() => {
       removeToast(toast);
     }, TIME_BEFORE_UNMOUNT);
   }, [toast]);
+
+  React.useLayoutEffect(() => {
+    if (!mounted) return;
+
+    const toastNode = toastRef.current;
+    const originalHeight = toastNode.style.height;
+    toastNode.style.height = "auto";
+
+    const newHeight = toastNode.getBoundingClientRect().height;
+    toastNode.style.height = originalHeight;
+
+    setInitialHeight(newHeight);
+
+    setHeights((heights) => {
+      const alreadyExists = heights.find(
+        (height) => height.toastId === toast.id
+      );
+
+      if (!alreadyExists) {
+        return [
+          {
+            toastId: toast.id,
+            height: newHeight,
+            position: toast.position,
+          },
+          ...heights,
+        ];
+      }
+    });
+  }, [mounted, toast.id]);
 
   React.useEffect(() => {
     let timeoutId: number;
@@ -66,20 +135,25 @@ const Toast = (props: ToastProps) => {
 
   return (
     <li
+      ref={toastRef}
       data-sonner-toast
       data-y-position={y}
       data-x-position={x}
       data-mounted={mounted}
       data-removed={removed}
+      data-front={isFront}
       // TODO Hardcode temporarily
       data-styled={true}
       style={
         {
           "--z-index": toasts.length - index,
+          "--initial-height": `${initialHeight}px`,
+          "--offset": `${removed ? offsetBeforeRemove : offset.current}px`,
+          "--toasts-before": index,
         } as React.CSSProperties
       }
     >
-      {toast.title}
+      <span>{toast.title}</span>
     </li>
   );
 };
@@ -90,6 +164,7 @@ const Toaster = (props: ToasterProps) => {
     offset,
     dir = getDocumentDirection(),
     theme = "light",
+    gap = GAP,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -102,6 +177,7 @@ const Toaster = (props: ToasterProps) => {
         : "light"
       : "light"
   );
+  const [heights, setHeights] = React.useState<HeightT[]>([]);
 
   const [y, x] = position.split("-");
 
@@ -167,6 +243,8 @@ const Toaster = (props: ToasterProps) => {
           {
             "--width": `${TOAST_WIDTH}px`,
             "--offset": offset ? `${offset}px` : VIEWPORT_OFFSET,
+            "--front-toast-height": `${heights[0]?.height || 0}px`,
+            "--gap": `${gap}px`,
           } as React.CSSProperties
         }
       >
@@ -178,6 +256,9 @@ const Toaster = (props: ToasterProps) => {
             removeToast={removeToast}
             index={index}
             toasts={toasts}
+            heights={heights}
+            setHeights={setHeights}
+            gap={gap}
           />
         ))}
       </ol>
