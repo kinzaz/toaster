@@ -20,6 +20,7 @@ export interface ToastProps {
   className?: string;
   cn: CnFunction;
   style?: React.CSSProperties;
+  expandByDefault: boolean;
 }
 
 export type Position =
@@ -39,6 +40,7 @@ export interface ToasterProps {
   toastOptions?: ToastOptions;
   cn?: CnFunction;
   style?: React.CSSProperties;
+  expand?: boolean;
 }
 
 export interface HeightT {

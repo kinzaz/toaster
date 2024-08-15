@@ -49,6 +49,7 @@ const Toast = (props: ToastProps) => {
     className = "",
     style,
     cn,
+    expandByDefault,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -149,12 +150,13 @@ const Toast = (props: ToastProps) => {
       data-mounted={mounted}
       data-removed={removed}
       data-front={isFront}
+      data-expanded={Boolean(expandByDefault && mounted)}
       // TODO Hardcode temporarily
       data-styled={true}
       style={
         {
           "--z-index": toasts.length - index,
-          "--initial-height": `${initialHeight}px`,
+          "--initial-height": expandByDefault ? "auto" : `${initialHeight}px`,
           "--offset": `${removed ? offsetBeforeRemove : offset.current}px`,
           "--toasts-before": index,
           ...style,
@@ -176,6 +178,7 @@ const Toaster = (props: ToasterProps) => {
     gap = GAP,
     toastOptions,
     cn = _cn,
+    expand,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -273,6 +276,7 @@ const Toaster = (props: ToasterProps) => {
             className={toastOptions?.className}
             cn={cn}
             style={toastOptions?.style}
+            expandByDefault={expand}
           />
         ))}
       </ol>

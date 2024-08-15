@@ -91,13 +91,18 @@
   height: var(--initial-height);
 }
 
-:where([data-sonner-toast][data-mounted='true'][data-front='false']) {
+:where([data-sonner-toast][data-mounted='true'][data-expanded='true']) {
+  --y: translateY(calc(var(--lift) * var(--offset)));
+  height: var(--initial-height);
+}
+
+:where([data-sonner-toast][data-expanded='false'][data-front='false']) {
   --scale: var(--toasts-before) * 0.05 + 1;
   --y: translateY(calc(var(--lift-amount) * var(--toasts-before))) scale(calc(-1 * var(--scale)));
   height: var(--front-toast-height);
 }
 
-:where([data-sonner-toast][data-mounted='true'][data-front='false']) > * {
+:where([data-sonner-toast][data-mounted='true'][data-expanded='false'][data-front='false']) > * {
   opacity: 0;
 }
 
