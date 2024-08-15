@@ -18,6 +18,9 @@ const TOAST_LIFETIME = 4000;
 // Default gap between toasts
 const GAP = 14;
 
+// Visible toasts amount
+const VISIBLE_TOASTS_AMOUNT = 3;
+
 function getDocumentDirection(): ToasterProps["dir"] {
   if (typeof window === "undefined") return "ltr";
   if (typeof document === "undefined") return "ltr";
@@ -50,6 +53,7 @@ const Toast = (props: ToastProps) => {
     style,
     cn,
     expandByDefault,
+    visibleToasts,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -64,6 +68,7 @@ const Toast = (props: ToastProps) => {
     () => heights.findIndex((height) => height.toastId === toast.id) || 0,
     [heights, toast.id]
   );
+  const isVisible = index + 1 <= visibleToasts;
 
   const toastsHeightBefore = React.useMemo(() => {
     return heights.reduce((prev, curr, reducerIndex) => {
@@ -127,7 +132,7 @@ const Toast = (props: ToastProps) => {
 
     const startTimer = () => {
       timeoutId = setTimeout(() => {
-        deleteToast();
+        // deleteToast();
       }, remainingTime);
     };
 
@@ -151,6 +156,7 @@ const Toast = (props: ToastProps) => {
       data-removed={removed}
       data-front={isFront}
       data-expanded={Boolean(expandByDefault && mounted)}
+      data-visible={isVisible}
       // TODO Hardcode temporarily
       data-styled={true}
       style={
@@ -179,6 +185,7 @@ const Toaster = (props: ToasterProps) => {
     toastOptions,
     cn = _cn,
     expand,
+    visibleToasts = VISIBLE_TOASTS_AMOUNT,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -277,6 +284,7 @@ const Toaster = (props: ToasterProps) => {
             cn={cn}
             style={toastOptions?.style}
             expandByDefault={expand}
+            visibleToasts={visibleToasts}
           />
         ))}
       </ol>

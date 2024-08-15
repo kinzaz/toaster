@@ -121,3 +121,8 @@
 :where([data-sonner-toast][data-removed='true']) {
   opacity: 0;
 }
+
+:where([data-sonner-toast][data-visible='false']) {
+  opacity: 0;
+  pointer-events: none;
+}
