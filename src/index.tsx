@@ -32,6 +32,10 @@ function getDocumentDirection(): ToasterProps["dir"] {
   return dirAttribute as ToasterProps["dir"];
 }
 
+function _cn(...classes: (string | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 const Toast = (props: ToastProps) => {
   const {
     toast,
@@ -42,6 +46,9 @@ const Toast = (props: ToastProps) => {
     heights,
     setHeights,
     gap,
+    className = "",
+    style,
+    cn,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -150,8 +157,10 @@ const Toast = (props: ToastProps) => {
           "--initial-height": `${initialHeight}px`,
           "--offset": `${removed ? offsetBeforeRemove : offset.current}px`,
           "--toasts-before": index,
+          ...style,
         } as React.CSSProperties
       }
+      className={cn(className)}
     >
       <span>{toast.title}</span>
     </li>
@@ -165,6 +174,8 @@ const Toaster = (props: ToasterProps) => {
     dir = getDocumentDirection(),
     theme = "light",
     gap = GAP,
+    toastOptions,
+    cn = _cn,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -259,6 +270,9 @@ const Toaster = (props: ToasterProps) => {
             heights={heights}
             setHeights={setHeights}
             gap={gap}
+            className={toastOptions?.className}
+            cn={cn}
+            style={toastOptions?.style}
           />
         ))}
       </ol>

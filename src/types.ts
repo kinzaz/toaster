@@ -1,4 +1,5 @@
 export type ExternalToast = any;
+type CnFunction = (...classes: Array<string | undefined>) => string;
 
 export interface ToastT {
   id: string | number;
@@ -16,6 +17,9 @@ export interface ToastProps {
   setHeights: React.Dispatch<React.SetStateAction<HeightT[]>>;
   position?: Position;
   gap?: number;
+  className?: string;
+  cn: CnFunction;
+  style?: React.CSSProperties;
 }
 
 export type Position =
@@ -32,10 +36,18 @@ export interface ToasterProps {
   dir?: "rtl" | "ltr" | "auto";
   theme?: "light" | "dark" | "system";
   gap?: number;
+  toastOptions?: ToastOptions;
+  cn?: CnFunction;
+  style?: React.CSSProperties;
 }
 
 export interface HeightT {
   height: number;
   toastId: number | string;
   position: Position;
+}
+
+interface ToastOptions {
+  className?: string;
+  style?: React.CSSProperties;
 }
