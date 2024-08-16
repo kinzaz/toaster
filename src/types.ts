@@ -22,6 +22,7 @@ export interface ToastProps {
   style?: React.CSSProperties;
   expandByDefault: boolean;
   visibleToasts: number;
+  invert: boolean;
 }
 
 export type Position =
@@ -43,6 +44,7 @@ export interface ToasterProps {
   style?: React.CSSProperties;
   expand?: boolean;
   visibleToasts?: number;
+  invert?: boolean;
 }
 
 export interface HeightT {

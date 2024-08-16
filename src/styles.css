@@ -118,6 +118,18 @@
   --normal-text: var(--gray1);
 }
 
+[data-sonner-toaster][data-theme='light'] [data-sonner-toast][data-invert='true'] {
+  --normal-bg: #000;
+  --normal-border: hsl(0, 0%, 20%);
+  --normal-text: var(--gray1);
+}
+
+[data-sonner-toaster][data-theme='dark'] [data-sonner-toast][data-invert='true'] {
+  --normal-bg: #fff;
+  --normal-border: var(--gray3);
+  --normal-text: var(--gray12);
+}
+
 :where([data-sonner-toast][data-removed='true']) {
   opacity: 0;
 }

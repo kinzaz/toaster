@@ -54,6 +54,7 @@ const Toast = (props: ToastProps) => {
     cn,
     expandByDefault,
     visibleToasts,
+    invert: ToasterInvert,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -69,6 +70,7 @@ const Toast = (props: ToastProps) => {
     [heights, toast.id]
   );
   const isVisible = index + 1 <= visibleToasts;
+  const invert = ToasterInvert;
 
   const toastsHeightBefore = React.useMemo(() => {
     return heights.reduce((prev, curr, reducerIndex) => {
@@ -157,6 +159,7 @@ const Toast = (props: ToastProps) => {
       data-front={isFront}
       data-expanded={Boolean(expandByDefault && mounted)}
       data-visible={isVisible}
+      data-invert={invert}
       // TODO Hardcode temporarily
       data-styled={true}
       style={
@@ -186,6 +189,7 @@ const Toaster = (props: ToasterProps) => {
     cn = _cn,
     expand,
     visibleToasts = VISIBLE_TOASTS_AMOUNT,
+    invert,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -285,6 +289,7 @@ const Toaster = (props: ToasterProps) => {
             style={toastOptions?.style}
             expandByDefault={expand}
             visibleToasts={visibleToasts}
+            invert={invert}
           />
         ))}
       </ol>
