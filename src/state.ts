@@ -1,10 +1,10 @@
-import { ExternalToast, ToastT } from "./types";
+import { ExternalToast, ToastT, ToastTypes } from "./types";
 
 let toastsCounter = 1;
 
 class Observer {
   subscribers: Array<(toast: ExternalToast | unknown) => void>;
-  toasts: Array<ToastT | unknown>;
+  toasts: Array<ToastT>;
   constructor() {
     this.subscribers = [];
     this.toasts = [];
@@ -27,6 +27,66 @@ class Observer {
     this.publish(data);
     this.toasts = [...this.toasts, data];
   }
+
+  create = (
+    data: ExternalToast & {
+      message?: string | React.ReactNode;
+      type?: ToastTypes;
+    }
+  ) => {
+    const { message, type, ...rest } = data;
+    const id =
+      typeof data?.id === "number" || data.id?.length > 0
+        ? data.id
+        : toastsCounter++;
+    const alreadyExists = this.toasts.find((toast) => {
+      return toast.id === id;
+    });
+
+    if (alreadyExists) {
+      this.toasts = this.toasts.map((toast) => {
+        if (toast.id === id) {
+          this.publish({ ...toast, ...data, id, title: message });
+          return {
+            ...toast,
+            ...data,
+            id,
+            title: message,
+          };
+        }
+
+        return toast;
+      });
+    } else {
+      this.addToast({ title: message, type, id, ...rest });
+    }
+
+    return id;
+  };
+
+  message = (message: string | React.ReactNode, data?: ExternalToast) => {
+    return this.create({ ...data, message });
+  };
+
+  error = (message: string | React.ReactNode, data?: ExternalToast) => {
+    return this.create({ ...data, message, type: "error" });
+  };
+
+  success = (message: string | React.ReactNode, data?: ExternalToast) => {
+    return this.create({ ...data, type: "success", message });
+  };
+
+  info = (message: string | React.ReactNode, data?: ExternalToast) => {
+    return this.create({ ...data, type: "info", message });
+  };
+
+  warning = (message: string | React.ReactNode, data?: ExternalToast) => {
+    return this.create({ ...data, type: "warning", message });
+  };
+
+  loading = (message: string | React.ReactNode, data?: ExternalToast) => {
+    return this.create({ ...data, type: "loading", message });
+  };
 }
 
 export const ToastState = new Observer();
@@ -47,4 +107,11 @@ const toastFunction = (
 
 const basicToast = toastFunction;
 
-export const toast = Object.assign(basicToast, {});
+export const toast = Object.assign(basicToast, {
+  success: ToastState.success,
+  info: ToastState.info,
+  warning: ToastState.warning,
+  error: ToastState.error,
+  message: ToastState.message,
+  loading: ToastState.loading,
+});

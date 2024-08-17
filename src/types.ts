@@ -1,3 +1,13 @@
+export type ToastTypes =
+  | "normal"
+  | "action"
+  | "success"
+  | "info"
+  | "warning"
+  | "error"
+  | "loading"
+  | "default";
+
 export type ExternalToast = Omit<
   ToastT,
   "id" | "type" | "title" | "jsx" | "delete" | "promise"
@@ -14,6 +24,8 @@ export interface ToastT {
   position?: Position;
   onDismiss?: (toast: ToastT) => void;
   closeButton?: boolean;
+  type?: ToastTypes;
+  richColors?: boolean;
 }
 
 export interface ToastProps {
@@ -35,6 +47,7 @@ export interface ToastProps {
   duration?: number;
   closeButton: boolean;
   closeButtonAriaLabel: string;
+  defaultRichColors?: boolean;
 }
 
 export type Position =
@@ -62,6 +75,7 @@ export interface ToasterProps {
   closeButton?: boolean;
   closeButtonAriaLabel?: string;
   containerAriaLabel?: string;
+  richColors?: boolean;
 }
 
 export interface HeightT {

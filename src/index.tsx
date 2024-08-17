@@ -60,6 +60,7 @@ const Toast = (props: ToastProps) => {
     duration: durationFromToaster,
     closeButton: closeButtonFromToaster,
     closeButtonAriaLabel = "Close toast",
+    defaultRichColors,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -82,6 +83,7 @@ const Toast = (props: ToastProps) => {
   const closeTimerStartTimeRef = React.useRef(0);
   const remainingTime = useRef(duration);
   const isDocumentHidden = useIsDocumentHidden();
+  const toastType = toast.type;
 
   const toastsHeightBefore = React.useMemo(() => {
     return heights.reduce((prev, curr, reducerIndex) => {
@@ -191,6 +193,8 @@ const Toast = (props: ToastProps) => {
       data-expanded={Boolean(expandByDefault && mounted)}
       data-visible={isVisible}
       data-invert={invert}
+      data-type={toastType}
+      data-rich-colors={toast.richColors ?? defaultRichColors}
       // TODO Hardcode temporarily
       data-styled={true}
       style={
@@ -248,6 +252,7 @@ const Toaster = (props: ToasterProps) => {
     closeButton,
     closeButtonAriaLabel,
     containerAriaLabel = "Notifications",
+    richColors,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -352,6 +357,7 @@ const Toaster = (props: ToasterProps) => {
             duration={toastOptions?.duration ?? duration}
             closeButton={toastOptions?.closeButton ?? closeButton}
             closeButtonAriaLabel={closeButtonAriaLabel}
+            defaultRichColors={richColors}
           />
         ))}
       </ol>
