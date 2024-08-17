@@ -247,6 +247,7 @@ const Toaster = (props: ToasterProps) => {
     duration,
     closeButton,
     closeButtonAriaLabel,
+    containerAriaLabel = "Notifications",
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -312,7 +313,7 @@ const Toaster = (props: ToasterProps) => {
   }, [theme]);
 
   return (
-    <section>
+    <section aria-label={containerAriaLabel} tabIndex={-1}>
       <ol
         data-sonner-toaster
         // TODO подбить стили под атрибут dir

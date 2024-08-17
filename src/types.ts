@@ -61,6 +61,7 @@ export interface ToasterProps {
   duration?: number;
   closeButton?: boolean;
   closeButtonAriaLabel?: string;
+  containerAriaLabel?: string;
 }
 
 export interface HeightT {
