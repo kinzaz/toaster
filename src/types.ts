@@ -23,6 +23,7 @@ export interface ToastProps {
   expandByDefault: boolean;
   visibleToasts: number;
   invert: boolean;
+  pauseWhenPageIsHidden: boolean;
 }
 
 export type Position =
@@ -45,6 +46,7 @@ export interface ToasterProps {
   expand?: boolean;
   visibleToasts?: number;
   invert?: boolean;
+  pauseWhenPageIsHidden?: boolean;
 }
 
 export interface HeightT {

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useIsDocumentHidden } from "./hooks";
 import { toast, ToastState } from "./state";
 import "./styles.css";
 import { HeightT, ToasterProps, ToastProps, ToastT } from "./types";
@@ -55,6 +56,7 @@ const Toast = (props: ToastProps) => {
     expandByDefault,
     visibleToasts,
     invert: ToasterInvert,
+    pauseWhenPageIsHidden,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -71,6 +73,9 @@ const Toast = (props: ToastProps) => {
   );
   const isVisible = index + 1 <= visibleToasts;
   const invert = ToasterInvert;
+  const closeTimerStartTimeRef = React.useRef(0);
+  const remainingTime = useRef(duration);
+  const isDocumentHidden = useIsDocumentHidden();
 
   const toastsHeightBefore = React.useMemo(() => {
     return heights.reduce((prev, curr, reducerIndex) => {
@@ -130,18 +135,28 @@ const Toast = (props: ToastProps) => {
 
   React.useEffect(() => {
     let timeoutId: number;
-    let remainingTime = duration;
 
-    const startTimer = () => {
-      timeoutId = setTimeout(() => {
-        // deleteToast();
-      }, remainingTime);
+    const pauseTimer = () => {
+      const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current;
+      remainingTime.current = remainingTime.current - elapsedTime;
     };
 
-    startTimer();
+    const startTimer = () => {
+      closeTimerStartTimeRef.current = new Date().getTime();
+
+      timeoutId = setTimeout(() => {
+        deleteToast();
+      }, remainingTime.current);
+    };
+
+    if (pauseWhenPageIsHidden && isDocumentHidden) {
+      pauseTimer();
+    } else {
+      startTimer();
+    }
 
     return () => clearTimeout(timeoutId);
-  }, [toast, deleteToast]);
+  }, [toast, deleteToast, pauseWhenPageIsHidden, isDocumentHidden]);
 
   React.useEffect(() => {
     // Trigger enter animation without using CSS animation
@@ -190,6 +205,7 @@ const Toaster = (props: ToasterProps) => {
     expand,
     visibleToasts = VISIBLE_TOASTS_AMOUNT,
     invert,
+    pauseWhenPageIsHidden,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -290,6 +306,7 @@ const Toaster = (props: ToasterProps) => {
             expandByDefault={expand}
             visibleToasts={visibleToasts}
             invert={invert}
+            pauseWhenPageIsHidden={pauseWhenPageIsHidden}
           />
         ))}
       </ol>
