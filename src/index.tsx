@@ -57,6 +57,7 @@ const Toast = (props: ToastProps) => {
     visibleToasts,
     invert: ToasterInvert,
     pauseWhenPageIsHidden,
+    duration: durationFromToaster,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -66,7 +67,10 @@ const Toast = (props: ToastProps) => {
   const [offsetBeforeRemove, setOffsetBeforeRemove] = React.useState(0);
   const [y, x] = position.split("-");
   const isFront = index === 0;
-  const duration = TOAST_LIFETIME;
+  const duration = React.useMemo(
+    () => durationFromToaster || TOAST_LIFETIME,
+    [durationFromToaster]
+  );
   const heightIndex = React.useMemo(
     () => heights.findIndex((height) => height.toastId === toast.id) || 0,
     [heights, toast.id]
@@ -206,6 +210,7 @@ const Toaster = (props: ToasterProps) => {
     visibleToasts = VISIBLE_TOASTS_AMOUNT,
     invert,
     pauseWhenPageIsHidden,
+    duration,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -307,6 +312,7 @@ const Toaster = (props: ToasterProps) => {
             visibleToasts={visibleToasts}
             invert={invert}
             pauseWhenPageIsHidden={pauseWhenPageIsHidden}
+            duration={toastOptions?.duration ?? duration}
           />
         ))}
       </ol>

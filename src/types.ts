@@ -24,6 +24,7 @@ export interface ToastProps {
   visibleToasts: number;
   invert: boolean;
   pauseWhenPageIsHidden: boolean;
+  duration?: number;
 }
 
 export type Position =
@@ -47,6 +48,7 @@ export interface ToasterProps {
   visibleToasts?: number;
   invert?: boolean;
   pauseWhenPageIsHidden?: boolean;
+  duration?: number;
 }
 
 export interface HeightT {
@@ -58,4 +60,5 @@ export interface HeightT {
 interface ToastOptions {
   className?: string;
   style?: React.CSSProperties;
+  duration?: number;
 }
