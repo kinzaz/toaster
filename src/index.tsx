@@ -58,6 +58,8 @@ const Toast = (props: ToastProps) => {
     invert: ToasterInvert,
     pauseWhenPageIsHidden,
     duration: durationFromToaster,
+    closeButton: closeButtonFromToaster,
+    closeButtonAriaLabel = "Close toast",
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -97,6 +99,11 @@ const Toast = (props: ToastProps) => {
     [heightIndex, toastsHeightBefore]
   );
 
+  const closeButton = React.useMemo(
+    () => toast.closeButton ?? closeButtonFromToaster,
+    [toast.closeButton, closeButtonFromToaster]
+  );
+
   const deleteToast = React.useCallback(() => {
     setRemoved(true);
     setHeights((h) => h.filter((height) => height.toastId !== toast.id));
@@ -106,6 +113,11 @@ const Toast = (props: ToastProps) => {
       removeToast(toast);
     }, TIME_BEFORE_UNMOUNT);
   }, [toast]);
+
+  const closeButtonHandler = () => {
+    deleteToast();
+    toast.onDismiss?.(toast);
+  };
 
   React.useLayoutEffect(() => {
     if (!mounted) return;
@@ -192,6 +204,28 @@ const Toast = (props: ToastProps) => {
       }
       className={cn(className)}
     >
+      {closeButton ? (
+        <button
+          aria-label={closeButtonAriaLabel}
+          onClick={closeButtonHandler}
+          data-close-button
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      ) : null}
       <span>{toast.title}</span>
     </li>
   );
@@ -211,6 +245,8 @@ const Toaster = (props: ToasterProps) => {
     invert,
     pauseWhenPageIsHidden,
     duration,
+    closeButton,
+    closeButtonAriaLabel,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -313,6 +349,8 @@ const Toaster = (props: ToasterProps) => {
             invert={invert}
             pauseWhenPageIsHidden={pauseWhenPageIsHidden}
             duration={toastOptions?.duration ?? duration}
+            closeButton={toastOptions?.closeButton ?? closeButton}
+            closeButtonAriaLabel={closeButtonAriaLabel}
           />
         ))}
       </ol>

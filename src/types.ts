@@ -1,4 +1,10 @@
-export type ExternalToast = any;
+export type ExternalToast = Omit<
+  ToastT,
+  "id" | "type" | "title" | "jsx" | "delete" | "promise"
+> & {
+  id?: number | string;
+};
+
 type CnFunction = (...classes: Array<string | undefined>) => string;
 
 export interface ToastT {
@@ -6,6 +12,8 @@ export interface ToastT {
   title?: string | React.ReactNode;
   description?: React.ReactNode;
   position?: Position;
+  onDismiss?: (toast: ToastT) => void;
+  closeButton?: boolean;
 }
 
 export interface ToastProps {
@@ -25,6 +33,8 @@ export interface ToastProps {
   invert: boolean;
   pauseWhenPageIsHidden: boolean;
   duration?: number;
+  closeButton: boolean;
+  closeButtonAriaLabel: string;
 }
 
 export type Position =
@@ -49,6 +59,8 @@ export interface ToasterProps {
   invert?: boolean;
   pauseWhenPageIsHidden?: boolean;
   duration?: number;
+  closeButton?: boolean;
+  closeButtonAriaLabel?: string;
 }
 
 export interface HeightT {
@@ -61,4 +73,5 @@ interface ToastOptions {
   className?: string;
   style?: React.CSSProperties;
   duration?: number;
+  closeButton?: boolean;
 }
