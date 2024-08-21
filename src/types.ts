@@ -34,6 +34,7 @@ export interface ToastT {
   richColors?: boolean;
   classNames?: ToastClassnames;
   descriptionClassName?: string;
+  duration?: number;
 }
 
 export interface ToastProps {

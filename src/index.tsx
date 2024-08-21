@@ -73,8 +73,8 @@ const Toast = (props: ToastProps) => {
   const [y, x] = position.split("-");
   const isFront = index === 0;
   const duration = React.useMemo(
-    () => durationFromToaster || TOAST_LIFETIME,
-    [durationFromToaster]
+    () => toast.duration || durationFromToaster || TOAST_LIFETIME,
+    [durationFromToaster, toast.duration]
   );
   const heightIndex = React.useMemo(
     () => heights.findIndex((height) => height.toastId === toast.id) || 0,
