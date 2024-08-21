@@ -21,6 +21,12 @@ export interface ToastClassnames {
   title?: string;
   description?: string;
   content?: string;
+  toast?: string;
+  default?: string;
+  success?: string;
+  error?: string;
+  info?: string;
+  warning?: string;
 }
 
 export interface ToastT {
@@ -32,6 +38,7 @@ export interface ToastT {
   closeButton?: boolean;
   type?: ToastTypes;
   richColors?: boolean;
+  className?: string;
   classNames?: ToastClassnames;
   descriptionClassName?: string;
   duration?: number;

@@ -87,6 +87,7 @@ const Toast = (props: ToastProps) => {
   const isDocumentHidden = useIsDocumentHidden();
   const toastType = toast.type;
   const toastDescriptionClassname = toast.descriptionClassName || "";
+  const toastClassname = toast.className || "";
 
   const toastsHeightBefore = React.useMemo(() => {
     return heights.reduce((prev, curr, reducerIndex) => {
@@ -209,7 +210,15 @@ const Toast = (props: ToastProps) => {
           ...style,
         } as React.CSSProperties
       }
-      className={cn(className)}
+      className={cn(
+        className,
+        toastClassname,
+        classNames?.toast,
+        toast?.classNames?.toast,
+        classNames?.default,
+        classNames?.[toastType],
+        toast?.classNames?.[toastType]
+      )}
     >
       {closeButton ? (
         <button
