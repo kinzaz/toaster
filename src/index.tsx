@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { getAsset, Loader } from "./assets";
 import { useIsDocumentHidden } from "./hooks";
 import { toast, ToastState } from "./state";
 import "./styles.css";
@@ -63,6 +64,7 @@ const Toast = (props: ToastProps) => {
     defaultRichColors,
     classNames,
     descriptionClassName = "",
+    icons,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -185,6 +187,18 @@ const Toast = (props: ToastProps) => {
     setMounted(true);
   }, []);
 
+  function getLoadingIcon() {
+    if (icons?.loading) {
+      return (
+        <div className="sonner-loader" data-visible={toastType === "loading"}>
+          {icons.loading}
+        </div>
+      );
+    }
+
+    return <Loader visible={toastType === "loading"} />;
+  }
+
   return (
     <li
       ref={toastRef}
@@ -242,30 +256,45 @@ const Toast = (props: ToastProps) => {
           </svg>
         </button>
       ) : null}
-      <div
-        data-content=""
-        className={cn(classNames?.content, toast?.classNames?.content)}
-      >
-        <div
-          data-title=""
-          className={cn(classNames?.title, toast?.classNames?.title)}
-        >
-          {toast.title}
-        </div>
-        {toast.description ? (
+
+      <>
+        {toastType || toast.icon ? (
           <div
-            data-description=""
-            className={cn(
-              descriptionClassName,
-              toastDescriptionClassname,
-              classNames?.description,
-              toast?.classNames?.description
-            )}
+            data-icon=""
+            className={cn(classNames?.icon, toast?.classNames?.icon)}
           >
-            {toast.description}
+            {toast.type === "loading" ? toast.icon || getLoadingIcon() : null}
+            {toast.type !== "loading"
+              ? toast.icon || icons?.[toastType] || getAsset(toastType)
+              : null}
           </div>
         ) : null}
-      </div>
+
+        <div
+          data-content=""
+          className={cn(classNames?.content, toast?.classNames?.content)}
+        >
+          <div
+            data-title=""
+            className={cn(classNames?.title, toast?.classNames?.title)}
+          >
+            {toast.title}
+          </div>
+          {toast.description ? (
+            <div
+              data-description=""
+              className={cn(
+                descriptionClassName,
+                toastDescriptionClassname,
+                classNames?.description,
+                toast?.classNames?.description
+              )}
+            >
+              {toast.description}
+            </div>
+          ) : null}
+        </div>
+      </>
     </li>
   );
 };
@@ -288,6 +317,7 @@ const Toaster = (props: ToasterProps) => {
     closeButtonAriaLabel,
     containerAriaLabel = "Notifications",
     richColors,
+    icons,
   } = props;
   const [toasts, setToasts] = React.useState<ToastT[]>([]);
   const [actualTheme, setActualTheme] = React.useState(
@@ -395,6 +425,7 @@ const Toaster = (props: ToasterProps) => {
             defaultRichColors={richColors}
             classNames={toastOptions?.classNames}
             descriptionClassName={toastOptions?.descriptionClassName}
+            icons={icons}
           />
         ))}
       </ol>

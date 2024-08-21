@@ -17,6 +17,14 @@ export type ExternalToast = Omit<
 
 type CnFunction = (...classes: Array<string | undefined>) => string;
 
+export interface ToastIcons {
+  success?: React.ReactNode;
+  info?: React.ReactNode;
+  warning?: React.ReactNode;
+  error?: React.ReactNode;
+  loading?: React.ReactNode;
+}
+
 export interface ToastClassnames {
   title?: string;
   description?: string;
@@ -27,6 +35,7 @@ export interface ToastClassnames {
   error?: string;
   info?: string;
   warning?: string;
+  icon?: string;
 }
 
 export interface ToastT {
@@ -42,6 +51,7 @@ export interface ToastT {
   classNames?: ToastClassnames;
   descriptionClassName?: string;
   duration?: number;
+  icon?: React.ReactNode;
 }
 
 export interface ToastProps {
@@ -66,6 +76,7 @@ export interface ToastProps {
   defaultRichColors?: boolean;
   classNames?: ToastClassnames;
   descriptionClassName?: string;
+  icons?: ToastIcons;
 }
 
 export type Position =
@@ -94,6 +105,7 @@ export interface ToasterProps {
   closeButtonAriaLabel?: string;
   containerAriaLabel?: string;
   richColors?: boolean;
+  icons?: ToastIcons;
 }
 
 export interface HeightT {
