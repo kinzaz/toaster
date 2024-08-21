@@ -3,7 +3,7 @@ import { getAsset, Loader } from "./assets";
 import { useIsDocumentHidden } from "./hooks";
 import { toast, ToastState } from "./state";
 import "./styles.css";
-import { HeightT, ToasterProps, ToastProps, ToastT } from "./types";
+import { HeightT, isAction, ToasterProps, ToastProps, ToastT } from "./types";
 
 // Default toast width
 const TOAST_WIDTH = 356;
@@ -65,6 +65,7 @@ const Toast = (props: ToastProps) => {
     classNames,
     descriptionClassName = "",
     icons,
+    actionButtonStyle,
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -294,6 +295,31 @@ const Toast = (props: ToastProps) => {
             </div>
           ) : null}
         </div>
+        {React.isValidElement(toast.action) ? (
+          toast.action
+        ) : toast.action && isAction(toast.action) ? (
+          <button
+            data-button
+            data-action
+            style={
+              toast.actionButtonStyle ||
+              actionButtonStyle ||
+              toast.action?.actionButtonStyle
+            }
+            onClick={(event) => {
+              if (!isAction(toast.action)) return;
+              if (event.defaultPrevented) return;
+              toast.action.onClick?.(event);
+              deleteToast();
+            }}
+            className={cn(
+              classNames?.actionButton,
+              toast?.classNames?.actionButton
+            )}
+          >
+            {toast.action.label}
+          </button>
+        ) : null}
       </>
     </li>
   );
@@ -426,6 +452,7 @@ const Toaster = (props: ToasterProps) => {
             classNames={toastOptions?.classNames}
             descriptionClassName={toastOptions?.descriptionClassName}
             icons={icons}
+            actionButtonStyle={toastOptions?.actionButtonStyle}
           />
         ))}
       </ol>

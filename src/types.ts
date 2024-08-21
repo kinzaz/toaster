@@ -1,3 +1,7 @@
+export function isAction(action: Action | React.ReactNode): action is Action {
+  return (action as Action).label !== undefined;
+}
+
 export type ToastTypes =
   | "normal"
   | "action"
@@ -16,6 +20,12 @@ export type ExternalToast = Omit<
 };
 
 type CnFunction = (...classes: Array<string | undefined>) => string;
+
+export interface Action {
+  label: React.ReactNode;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  actionButtonStyle?: React.CSSProperties;
+}
 
 export interface ToastIcons {
   success?: React.ReactNode;
@@ -36,6 +46,7 @@ export interface ToastClassnames {
   info?: string;
   warning?: string;
   icon?: string;
+  actionButton?: string;
 }
 
 export interface ToastT {
@@ -52,6 +63,8 @@ export interface ToastT {
   descriptionClassName?: string;
   duration?: number;
   icon?: React.ReactNode;
+  action?: Action | React.ReactNode;
+  actionButtonStyle?: React.CSSProperties;
 }
 
 export interface ToastProps {
@@ -77,6 +90,7 @@ export interface ToastProps {
   classNames?: ToastClassnames;
   descriptionClassName?: string;
   icons?: ToastIcons;
+  actionButtonStyle?: React.CSSProperties;
 }
 
 export type Position =
@@ -121,4 +135,5 @@ interface ToastOptions {
   closeButton?: boolean;
   classNames?: ToastClassnames;
   descriptionClassName?: string;
+  actionButtonStyle?: React.CSSProperties;
 }
