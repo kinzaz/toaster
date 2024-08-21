@@ -285,3 +285,21 @@
   border-color: var(--error-border);
   color: var(--error-text);
 }
+
+:where([data-sonner-toast]) :where([data-content]) {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+:where([data-sonner-toast]) :where([data-title]) {
+  font-weight: 500;
+  line-height: 1.5;
+  color: inherit;
+}
+
+:where([data-sonner-toast]) :where([data-description]) {
+  font-weight: 400;
+  line-height: 1.4;
+  color: inherit;
+}

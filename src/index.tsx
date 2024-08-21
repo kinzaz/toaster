@@ -61,6 +61,8 @@ const Toast = (props: ToastProps) => {
     closeButton: closeButtonFromToaster,
     closeButtonAriaLabel = "Close toast",
     defaultRichColors,
+    classNames,
+    descriptionClassName = "",
   } = props;
   const toastRef = React.useRef<HTMLLIElement>(null);
   const offset = React.useRef(0);
@@ -84,6 +86,7 @@ const Toast = (props: ToastProps) => {
   const remainingTime = useRef(duration);
   const isDocumentHidden = useIsDocumentHidden();
   const toastType = toast.type;
+  const toastDescriptionClassname = toast.descriptionClassName || "";
 
   const toastsHeightBefore = React.useMemo(() => {
     return heights.reduce((prev, curr, reducerIndex) => {
@@ -230,7 +233,30 @@ const Toast = (props: ToastProps) => {
           </svg>
         </button>
       ) : null}
-      <span>{toast.title}</span>
+      <div
+        data-content=""
+        className={cn(classNames?.content, toast?.classNames?.content)}
+      >
+        <div
+          data-title=""
+          className={cn(classNames?.title, toast?.classNames?.title)}
+        >
+          {toast.title}
+        </div>
+        {toast.description ? (
+          <div
+            data-description=""
+            className={cn(
+              descriptionClassName,
+              toastDescriptionClassname,
+              classNames?.description,
+              toast?.classNames?.description
+            )}
+          >
+            {toast.description}
+          </div>
+        ) : null}
+      </div>
     </li>
   );
 };
@@ -358,6 +384,8 @@ const Toaster = (props: ToasterProps) => {
             closeButton={toastOptions?.closeButton ?? closeButton}
             closeButtonAriaLabel={closeButtonAriaLabel}
             defaultRichColors={richColors}
+            classNames={toastOptions?.classNames}
+            descriptionClassName={toastOptions?.descriptionClassName}
           />
         ))}
       </ol>
