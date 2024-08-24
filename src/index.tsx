@@ -505,4 +505,9 @@ const Toaster = (props: ToasterProps) => {
   );
 };
 
-export { toast, Toaster };
+export {
+  type Action,
+  type ToastClassnames,
+  type ToastToDismiss,
+} from "./types";
+export { toast, Toaster, type ToasterProps, type ToastT };
