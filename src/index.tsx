@@ -3,7 +3,14 @@ import { getAsset, Loader } from "./assets";
 import { useIsDocumentHidden } from "./hooks";
 import { toast, ToastState } from "./state";
 import "./styles.css";
-import { HeightT, isAction, ToasterProps, ToastProps, ToastT } from "./types";
+import {
+  HeightT,
+  isAction,
+  ToasterProps,
+  ToastProps,
+  ToastT,
+  ToastToDismiss,
+} from "./types";
 
 // Default toast width
 const TOAST_WIDTH = 356;
@@ -123,6 +130,12 @@ const Toast = (props: ToastProps) => {
     }, TIME_BEFORE_UNMOUNT);
   }, [toast]);
 
+  React.useEffect(() => {
+    if (toast.delete) {
+      deleteToast();
+    }
+  }, [deleteToast, toast.delete]);
+
   const closeButtonHandler = () => {
     deleteToast();
     toast.onDismiss?.(toast);
@@ -130,11 +143,9 @@ const Toast = (props: ToastProps) => {
 
   React.useLayoutEffect(() => {
     if (!mounted) return;
-
     const toastNode = toastRef.current;
     const originalHeight = toastNode.style.height;
     toastNode.style.height = "auto";
-
     const newHeight = toastNode.getBoundingClientRect().height;
     toastNode.style.height = originalHeight;
 
@@ -144,19 +155,20 @@ const Toast = (props: ToastProps) => {
       const alreadyExists = heights.find(
         (height) => height.toastId === toast.id
       );
-
       if (!alreadyExists) {
         return [
-          {
-            toastId: toast.id,
-            height: newHeight,
-            position: toast.position,
-          },
+          { toastId: toast.id, height: newHeight, position: toast.position },
           ...heights,
         ];
+      } else {
+        return heights.map((height) =>
+          height.toastId === toast.id
+            ? { ...height, height: newHeight }
+            : height
+        );
       }
     });
-  }, [mounted, toast.id]);
+  }, [mounted, toast.title, toast.description, setHeights, toast.id]);
 
   React.useEffect(() => {
     let timeoutId: number;
@@ -181,12 +193,38 @@ const Toast = (props: ToastProps) => {
     }
 
     return () => clearTimeout(timeoutId);
-  }, [toast, deleteToast, pauseWhenPageIsHidden, isDocumentHidden]);
+  }, [
+    expandByDefault,
+    toast,
+    duration,
+    deleteToast,
+    toastType,
+    pauseWhenPageIsHidden,
+    isDocumentHidden,
+  ]);
 
   React.useEffect(() => {
     // Trigger enter animation without using CSS animation
     setMounted(true);
   }, []);
+
+  React.useEffect(() => {
+    const toastNode = toastRef.current;
+
+    if (toastNode) {
+      const height = toastNode.getBoundingClientRect().height;
+
+      // Add toast height tot heights array after the toast is mounted
+      setInitialHeight(height);
+      setHeights((h) => [
+        { toastId: toast.id, height, position: toast.position },
+        ...h,
+      ]);
+
+      return () =>
+        setHeights((h) => h.filter((height) => height.toastId !== toast.id));
+    }
+  }, [setHeights, toast.id]);
 
   function getLoadingIcon() {
     if (icons?.loading) {
@@ -368,6 +406,13 @@ const Toaster = (props: ToasterProps) => {
 
   React.useEffect(() => {
     return ToastState.subscribe((toast) => {
+      if ((toast as ToastToDismiss).dismiss) {
+        setToasts((toasts) =>
+          toasts.map((t) => (t.id === toast.id ? { ...t, delete: true } : t))
+        );
+        return;
+      }
+
       setToasts((prevToasts) => {
         return [toast, ...prevToasts];
       });

@@ -2,6 +2,16 @@ export function isAction(action: Action | React.ReactNode): action is Action {
   return (action as Action).label !== undefined;
 }
 
+export type PromiseT = Promise<any> | (() => Promise<any>);
+
+export type PromiseData<ToastData = any> = {
+  success?: any;
+  error?: any;
+  description?: any;
+  finally?: any;
+  loading?: any;
+};
+
 export type ToastTypes =
   | "normal"
   | "action"
@@ -65,6 +75,7 @@ export interface ToastT {
   icon?: React.ReactNode;
   action?: Action | React.ReactNode;
   actionButtonStyle?: React.CSSProperties;
+  delete?: boolean;
 }
 
 export interface ToastProps {
@@ -136,4 +147,9 @@ interface ToastOptions {
   classNames?: ToastClassnames;
   descriptionClassName?: string;
   actionButtonStyle?: React.CSSProperties;
+}
+
+export interface ToastToDismiss {
+  id: number | string;
+  dismiss: boolean;
 }
